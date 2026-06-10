@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verbos Irregulares · by Chiguin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0d0d14;
+    --surface: #16161f;
+    --surface2: #1e1e2a;
+    --border: rgba(255,255,255,0.07);
+    --accent: #7c5cfc;
+    --accent2: #c05cfc;
+    --glow: rgba(124,92,252,0.35);
+    --text: #f0eeff;
+    --text-sub: rgba(240,238,255,0.55);
+    --text-dim: rgba(240,238,255,0.3);
+    --speaking-bg: rgba(124,92,252,0.18);
+    --speaking-border: rgba(124,92,252,0.6);
+    --done-opacity: 0.3;
+    --active-border: #7c5cfc;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 0;
+  }
+
+  /* ── HEADER ── */
+  .hero {
+    background: linear-gradient(135deg, #0d0d14 0%, #13101e 60%, #0d0d14 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 1.5rem 1.75rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: -60px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(124,92,252,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; right: -40px;
+    width: 240px; height: 240px;
+    background: radial-gradient(circle, rgba(192,92,252,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 18px; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #fff 30%, #c4b5fd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+  }
+
+  .hero p {
+    font-size: 13px;
+    color: var(--text-sub);
+    line-height: 1.6;
+  }
+
+  .hero-brand {
+    position: absolute;
+    top: 1.5rem; right: 1.5rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+  .hero-brand span {
+    color: var(--accent);
+  }
+
+  /* ── MAIN CONTENT ── */
+  .container {
+    padding: 1.5rem;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  /* ── GROUP PILLS ── */
+  .section-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+  }
+
+  .group-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 1.5rem;
+  }
+
+  .group-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 11.5px;
+    font-weight: 500;
+    padding: 5px 13px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-sub);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    white-space: nowrap;
+  }
+  .group-btn:hover {
+    border-color: rgba(124,92,252,0.4);
+    color: var(--text);
+    background: var(--surface2);
+  }
+  .group-btn.active {
+    background: linear-gradient(135deg, rgba(124,92,252,0.25), rgba(192,92,252,0.15));
+    border-color: rgba(124,92,252,0.6);
+    color: #c4b5fd;
+    font-weight: 600;
+    box-shadow: 0 0 12px rgba(124,92,252,0.2);
+  }
+
+  /* ── CONTROLS ── */
+  .controls-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn-play {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 22px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 18px rgba(124,92,252,0.35);
+    letter-spacing: 0.01em;
+  }
+  .btn-play:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px rgba(124,92,252,0.5);
+  }
+  .btn-play:active { transform: translateY(0); }
+  .btn-play:disabled { opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .btn-stop {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: 1px solid rgba(252,92,92,0.4);
+    background: rgba(252,92,92,0.1);
+    color: #fc8c8c;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.18s ease;
+  }
+  .btn-stop:hover {
+    background: rgba(252,92,92,0.18);
+    border-color: rgba(252,92,92,0.6);
+  }
+
+  .pause-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-sub);
+    margin-left: auto;
+  }
+  .pause-row svg { flex-shrink: 0; }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    width: 100px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--surface2);
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    box-shadow: 0 0 6px var(--glow);
+    cursor: pointer;
+  }
+
+  .pause-val {
+    font-weight: 600;
+    color: var(--accent);
+    min-width: 26px;
+    font-size: 12px;
+  }
+
+  /* ── PROGRESS ── */
+  .progress-bar {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 2px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    box-shadow: 0 0 8px var(--glow);
+  }
+
+  .status {
+    font-size: 12px;
+    color: var(--text-dim);
+    min-height: 18px;
+    margin-bottom: 1.25rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+  }
+  .status.active {
+    color: #c4b5fd;
+  }
+
+  /* ── GROUP TITLES ── */
+  .group-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    padding: 0.5rem 0 0.4rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .group-title::before, .group-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .group-title:first-child { margin-top: 0; }
+
+  /* ── VERB CARDS ── */
+  .verb-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.1rem;
+    margin-bottom: 8px;
+    transition: border-color 0.2s, background 0.2s, opacity 0.2s, box-shadow 0.2s;
+  }
+  .verb-card.active {
+    border-color: var(--active-border);
+    background: rgba(124,92,252,0.07);
+    box-shadow: 0 0 20px rgba(124,92,252,0.15);
+  }
+  .verb-card.done {
+    opacity: var(--done-opacity);
+  }
+
+  .verb-es {
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+  }
+
+  .verb-row {
+    display: flex;
+    gap: 7px;
+  }
+
+  .verb-col {
+    flex: 1;
+    min-width: 0;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 8px 9px;
+    transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+  .verb-col.speaking {
+    background: var(--speaking-bg);
+    border-color: var(--speaking-border);
+    box-shadow: 0 0 12px rgba(124,92,252,0.25);
+  }
+
+  .col-label {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .col-word {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .verb-col.speaking .col-word {
+    color: #c4b5fd;
+  }
+  .col-pron {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 3px;
+    font-style: italic;
+  }
+  .verb-col.speaking .col-pron {
+    color: rgba(196,181,253,0.7);
+  }
+
+  /* ── SPEAKER ICON ── */
+  .speaking-icon {
+    display: none;
+    float: right;
+    margin-top: 1px;
+  }
+  .verb-col.speaking .speaking-icon {
+    display: inline-block;
+    animation: pulse-icon 0.8s ease infinite alternate;
+  }
+  @keyframes pulse-icon {
+    from { opacity: 0.5; transform: scale(0.9); }
+    to   { opacity: 1;   transform: scale(1.1); }
+  }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+
+  @media (max-width: 420px) {
+    .hero { padding: 1.5rem 1.1rem 1.4rem; }
+    .container { padding: 1.1rem; }
+    .col-word { font-size: 13px; }
+    .pause-row { margin-left: 0; width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-eyebrow">Inglés · Audio</div>
+  <h1>Verbos Irregulares</h1>
+  <p>Escucha cada forma y repite en voz alta durante la pausa</p>
+  <div class="hero-brand">by <span>Chiguin</span></div>
+</header>
+
+<div class="container">
+
+  <div class="section-label">Grupos</div>
+  <div class="group-selector" id="groupSelector"></div>
+
+  <div class="controls-wrap">
+    <button class="btn-play" id="btnPlay" onclick="startPlaying()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polygon points="3,1 13,7 3,13" fill="currentColor"/></svg>
+      Comenzar
+    </button>
+    <button class="btn-stop" id="btnStop" onclick="stopPlaying()" style="display:none">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="2" fill="currentColor"/></svg>
+      Detener
+    </button>
+    <div class="pause-row">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+        <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/>
+        <path d="M6.5 3.5v3l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      Pausa
+      <input type="range" min="1" max="5" step="0.5" value="2" id="pauseSlider"
+        oninput="document.getElementById('pauseVal').textContent=this.value+'s'">
+      <span class="pause-val" id="pauseVal">2s</span>
+    </div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  <div class="status" id="status"></div>
+  <div id="verbList"></div>
+
+</div>
+
+<script>
+const ALL_GROUPS = [
+  {
+    id:"top", label:"Los más importantes",
+    verbs:[
+      { es:"Ser / Estar",    base:"Be",     baseP:"bii",     past:"Was / Were", pastP:"uos / uer", part:"Been",       partP:"bin"      },
+      { es:"Tener",          base:"Have",   baseP:"jav",     past:"Had",        pastP:"jad",       part:"Had",        partP:"jad"      },
+      { es:"Hacer",          base:"Do",     baseP:"du",      past:"Did",        pastP:"did",       part:"Done",       partP:"don"      },
+      { es:"Ir",             base:"Go",     baseP:"gou",     past:"Went",       pastP:"uent",      part:"Gone",       partP:"gon"      },
+      { es:"Venir",          base:"Come",   baseP:"cam",     past:"Came",       pastP:"keim",      part:"Come",       partP:"cam"      },
+      { es:"Obtener",        base:"Get",    baseP:"get",     past:"Got",        pastP:"got",       part:"Got/Gotten", partP:"got/gaten"},
+      { es:"Hacer/Fabricar", base:"Make",   baseP:"meik",    past:"Made",       pastP:"meid",      part:"Made",       partP:"meid"     },
+      { es:"Tomar",          base:"Take",   baseP:"teik",    past:"Took",       pastP:"tuk",       part:"Taken",      partP:"teiken"   },
+      { es:"Ver",            base:"See",    baseP:"sii",     past:"Saw",        pastP:"so",        part:"Seen",       partP:"siin"     },
+      { es:"Saber/Conocer",  base:"Know",   baseP:"nou",     past:"Knew",       pastP:"niu",       part:"Known",      partP:"noun"     },
+    ]
+  },
+  {
+    id:"g1", label:"Grupo 1: -ought/-aught",
+    verbs:[
+      { es:"Comprar",  base:"Buy",   baseP:"bai",   past:"Bought", pastP:"bot",  part:"Bought", partP:"bot"  },
+      { es:"Traer",   base:"Bring", baseP:"bring", past:"Brought",pastP:"brot", part:"Brought",partP:"brot" },
+      { es:"Pensar",  base:"Think", baseP:"zink",  past:"Thought",pastP:"zot",  part:"Thought",partP:"zot"  },
+      { es:"Enseñar", base:"Teach", baseP:"tich",  past:"Taught", pastP:"tot",  part:"Taught", partP:"tot"  },
+      { es:"Atrapar", base:"Catch", baseP:"cach",  past:"Caught", pastP:"cot",  part:"Caught", partP:"cot"  },
+    ]
+  },
+  {
+    id:"g2", label:"Grupo 2: -old",
+    verbs:[
+      { es:"Vender",       base:"Sell", baseP:"sel", past:"Sold", pastP:"sold", part:"Sold", partP:"sold" },
+      { es:"Decir/Contar", base:"Tell", baseP:"tel", past:"Told", pastP:"told", part:"Told", partP:"told" },
+    ]
+  },
+  {
+    id:"g3", label:"Grupo 3: -ent",
+    verbs:[
+      { es:"Enviar",  base:"Send",  baseP:"send",  past:"Sent",  pastP:"sent",  part:"Sent",  partP:"sent"  },
+      { es:"Gastar",  base:"Spend", baseP:"spend", past:"Spent", pastP:"spent", part:"Spent", partP:"spent" },
+      { es:"Prestar", base:"Lend",  baseP:"lend",  past:"Lent",  pastP:"lent",  part:"Lent",  partP:"lent"  },
+    ]
+  },
+  {
+    id:"g4", label:"Grupo 4: -ept",
+    verbs:[
+      { es:"Mantener", base:"Keep",  baseP:"kiip",  past:"Kept",  pastP:"kept",  part:"Kept",  partP:"kept"  },
+      { es:"Dormir",   base:"Sleep", baseP:"sliip", past:"Slept", pastP:"slept", part:"Slept", partP:"slept" },
+    ]
+  },
+  {
+    id:"g5", label:"Grupo 5: -elt",
+    verbs:[
+      { es:"Sentir", base:"Feel",  baseP:"fiil", past:"Felt",  pastP:"felt",  part:"Felt",  partP:"felt"  },
+      { es:"Oler",   base:"Smell", baseP:"smel", past:"Smelt", pastP:"smelt", part:"Smelt", partP:"smelt" },
+    ]
+  },
+  {
+    id:"g6", label:"Grupo 6: i→a→u",
+    verbs:[
+      { es:"Cantar",    base:"Sing",  baseP:"sing",   past:"Sang",  pastP:"sang",  part:"Sung",  partP:"song"  },
+      { es:"Beber",     base:"Drink", baseP:"drink",  past:"Drank", pastP:"drank", part:"Drunk", partP:"dronk" },
+      { es:"Nadar",     base:"Swim",  baseP:"suim",   past:"Swam",  pastP:"suam",  part:"Swum",  partP:"suom"  },
+      { es:"Sonar",     base:"Ring",  baseP:"ring",   past:"Rang",  pastP:"rang",  part:"Rung",  partP:"rong"  },
+      { es:"Comenzar",  base:"Begin", baseP:"biguin", past:"Began", pastP:"bigán", part:"Begun", partP:"bigón" },
+    ]
+  },
+  {
+    id:"g7", label:"Grupo 7: i→o→en",
+    verbs:[
+      { es:"Escribir",  base:"Write",  baseP:"rait",   past:"Wrote", pastP:"rout",  part:"Written", partP:"riten"   },
+      { es:"Conducir",  base:"Drive",  baseP:"draiv",  past:"Drove", pastP:"drov",  part:"Driven",  partP:"driven"  },
+      { es:"Montar",    base:"Ride",   baseP:"raid",   past:"Rode",  pastP:"roud",  part:"Ridden",  partP:"riden"   },
+      { es:"Hablar",    base:"Speak",  baseP:"spiik",  past:"Spoke", pastP:"spouk", part:"Spoken",  partP:"spouken" },
+      { es:"Romper",    base:"Break",  baseP:"breik",  past:"Broke", pastP:"brouk", part:"Broken",  partP:"brouken" },
+      { es:"Elegir",    base:"Choose", baseP:"chuus",  past:"Chose", pastP:"chous", part:"Chosen",  partP:"chousen" },
+      { es:"Robar",     base:"Steal",  baseP:"stiil",  past:"Stole", pastP:"stoul", part:"Stolen",  partP:"stoulen" },
+    ]
+  },
+  {
+    id:"g8", label:"Grupo 8: pasado = participio",
+    verbs:[
+      { es:"Decir",     base:"Say",  baseP:"sei",  past:"Said",  pastP:"sed",   part:"Said",  partP:"sed"   },
+      { es:"Pagar",     base:"Pay",  baseP:"pei",  past:"Paid",  pastP:"peid",  part:"Paid",  partP:"peid"  },
+      { es:"Escuchar",  base:"Hear", baseP:"jir",  past:"Heard", pastP:"jerd",  part:"Heard", partP:"jerd"  },
+      { es:"Perder",    base:"Lose", baseP:"luus", past:"Lost",  pastP:"lost",  part:"Lost",  partP:"lost"  },
+      { es:"Encontrar", base:"Find", baseP:"faind",past:"Found", pastP:"faund", part:"Found", partP:"faund" },
+    ]
+  },
+  {
+    id:"g9", label:"Grupo 9: base = participio",
+    verbs:[
+      { es:"Venir",       base:"Come",   baseP:"cam",    past:"Came",   pastP:"keim",   part:"Come",   partP:"cam"   },
+      { es:"Convertirse", base:"Become", baseP:"bicám",  past:"Became", pastP:"bicéim", part:"Become", partP:"bicám" },
+      { es:"Correr",      base:"Run",    baseP:"ran",    past:"Ran",    pastP:"ran",    part:"Run",    partP:"ran"   },
+    ]
+  },
+  {
+    id:"g10", label:"Grupo 10: los tres iguales",
+    verbs:[
+      { es:"Cortar",   base:"Cut", baseP:"cat",  past:"Cut",  pastP:"cat",  part:"Cut",  partP:"cat"  },
+      { es:"Golpear",  base:"Hit", baseP:"jit",  past:"Hit",  pastP:"jit",  part:"Hit",  partP:"jit"  },
+      { es:"Costar",   base:"Cost",baseP:"cost", past:"Cost", pastP:"cost", part:"Cost", partP:"cost" },
+      { es:"Poner",    base:"Put", baseP:"put",  past:"Put",  pastP:"put",  part:"Put",  partP:"put"  },
+      { es:"Dejar",    base:"Let", baseP:"let",  past:"Let",  pastP:"let",  part:"Let",  partP:"let"  },
+    ]
+  },
+];
+
+let activeGroups = new Set(["top"]);
+let playing = false;
+let stopFlag = false;
+
+function getSelectedVerbs() {
+  let result = [];
+  ALL_GROUPS.forEach(g => { if(activeGroups.has(g.id)) result = result.concat(g.verbs.map((v,i) => ({...v, gid:g.id, vi:i}))); });
+  return result;
+}
+
+function renderGroups() {
+  const sel = document.getElementById("groupSelector");
+  sel.innerHTML = "";
+  ALL_GROUPS.forEach(g => {
+    const b = document.createElement("button");
+    b.className = "group-btn" + (activeGroups.has(g.id) ? " active" : "");
+    b.textContent = g.label;
+    b.onclick = () => toggleGroup(g.id, b);
+    sel.appendChild(b);
+  });
+}
+
+function toggleGroup(id, btn) {
+  if(activeGroups.has(id)) {
+    if(activeGroups.size > 1) { activeGroups.delete(id); btn.classList.remove("active"); }
+  } else { activeGroups.add(id); btn.classList.add("active"); }
+  renderVerbList();
+}
+
+function getGlobalIndex(gid, vi) {
+  let idx = 0;
+  for(const g of ALL_GROUPS) {
+    if(!activeGroups.has(g.id)) continue;
+    if(g.id === gid) return idx + vi;
+    idx += g.verbs.length;
+  }
+  return -1;
+}
+
+function renderVerbList(activeIdx=-1, activeCol=-1) {
+  const list = document.getElementById("verbList");
+  list.innerHTML = "";
+  ALL_GROUPS.forEach(g => {
+    if(!activeGroups.has(g.id)) return;
+    const title = document.createElement("div");
+    title.className = "group-title";
+    title.textContent = g.label;
+    list.appendChild(title);
+    g.verbs.forEach((v, i) => {
+      const gIdx = getGlobalIndex(g.id, i);
+      const card = document.createElement("div");
+      card.className = "verb-card" + (gIdx===activeIdx ? " active" : (activeIdx>=0 && gIdx<activeIdx ? " done" : ""));
+      card.id = "vcard-" + gIdx;
+      card.innerHTML = `
+        <div class="verb-es">${v.es}</div>
+        <div class="verb-row">
+          <div class="verb-col${gIdx===activeIdx && activeCol===0?' speaking':''}" id="vcol-${gIdx}-0">
+            <span class="speaking-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <circle cx="5" cy="5" r="4" fill="rgba(196,181,253,0.4)"/>
+                <circle cx="5" cy="5" r="2" fill="#c4b5fd"/>
+              </svg>
+            </span>
+            <div class="col-label">Base</div>
+            <div class="col-word">${v.base}</div>
+            <div class="col-pron">${v.baseP}</div>
+          </div>
+          <div class="verb-col${gIdx===activeIdx && activeCol===1?' speaking':''}" id="vcol-${gIdx}-1">
+            <span class="speaking-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <circle cx="5" cy="5" r="4" fill="rgba(196,181,253,0.4)"/>
+                <circle cx="5" cy="5" r="2" fill="#c4b5fd"/>
+              </svg>
+            </span>
+            <div class="col-label">Pasado</div>
+            <div class="col-word">${v.past}</div>
+            <div class="col-pron">${v.pastP}</div>
+          </div>
+          <div class="verb-col${gIdx===activeIdx && activeCol===2?' speaking':''}" id="vcol-${gIdx}-2">
+            <span class="speaking-icon">
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <circle cx="5" cy="5" r="4" fill="rgba(196,181,253,0.4)"/>
+                <circle cx="5" cy="5" r="2" fill="#c4b5fd"/>
+              </svg>
+            </span>
+            <div class="col-label">Participio</div>
+            <div class="col-word">${v.part}</div>
+            <div class="col-pron">${v.partP}</div>
+          </div>
+        </div>`;
+      list.appendChild(card);
+    });
+  });
+}
+
+function speak(text, rate=0.85) {
+  return new Promise(res => {
+    if (!window.speechSynthesis) { res(); return; }
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = "en-US";
+    utt.rate = rate;
+    utt.onend = res;
+    utt.onerror = res;
+    window.speechSynthesis.speak(utt);
+  });
+}
+
+function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+async function startPlaying() {
+  if(playing) return;
+  playing = true; stopFlag = false;
+  document.getElementById("btnPlay").style.display = "none";
+  document.getElementById("btnStop").style.display = "";
+  const verbs = getSelectedVerbs();
+  const pauseMs = parseFloat(document.getElementById("pauseSlider").value) * 1000;
+  const statusEl = document.getElementById("status");
+  statusEl.className = "status active";
+
+  for(let i = 0; i < verbs.length; i++) {
+    if(stopFlag) break;
+    const v = verbs[i];
+    const gIdx = getGlobalIndex(v.gid, v.vi);
+    statusEl.textContent = `▶ Verbo ${i+1} de ${verbs.length}: ${v.base}`;
+    document.getElementById("progressFill").style.width = Math.round((i/verbs.length)*100)+"%";
+    renderVerbList(gIdx, -1);
+    const card = document.getElementById("vcard-"+gIdx);
+    if(card) card.scrollIntoView({behavior:"smooth", block:"center"});
+    const cols = [{text:v.base+".", col:0}, {text:v.past+".", col:1}, {text:v.part+".", col:2}];
+    for(const c of cols) {
+      if(stopFlag) break;
+      renderVerbList(gIdx, c.col);
+      await speak(c.text);
+      if(stopFlag) break;
+      await wait(pauseMs);
+    }
+  }
+
+  if(!stopFlag) {
+    statusEl.textContent = "✓ ¡Completado!";
+    statusEl.className = "status active";
+    document.getElementById("progressFill").style.width = "100%";
+    renderVerbList();
+  }
+  playing = false; stopFlag = false;
+  document.getElementById("btnPlay").style.display = "";
+  document.getElementById("btnStop").style.display = "none";
+}
+
+function stopPlaying() {
+  stopFlag = true;
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  playing = false;
+  document.getElementById("btnPlay").style.display = "";
+  document.getElementById("btnStop").style.display = "none";
+  const statusEl = document.getElementById("status");
+  statusEl.textContent = "Detenido.";
+  statusEl.className = "status";
+  renderVerbList();
+}
+
+renderGroups();
+renderVerbList();
+</script>
+</body>
+</html>
