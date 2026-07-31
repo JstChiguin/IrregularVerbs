@@ -99,14 +99,34 @@
     line-height: 1.6;
   }
 
+  /* ── FIRMA "by Chiguin" ──
+     Antes vivía "pegada" adentro del header (position: absolute
+     respecto a .hero), así que desaparecía apenas hacías scroll.
+     Ahora es "position: fixed", que se posiciona respecto a la
+     PANTALLA (el viewport) y no respecto a ningún contenedor padre:
+     por eso queda flotando en la esquina inferior derecha SIEMPRE
+     visible, sin importar cuánto hayas scrolleado la página. */
   .hero-brand {
-    position: absolute;
-    top: 1.5rem; right: 1.5rem;
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    /* fondo semi-transparente + blur, para que no tape el contenido
+       que quede detrás y se note que "flota" sobre la página */
+    background: rgba(19,16,30,0.85);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
     font-family: 'Syne', sans-serif;
     font-size: 12px;
     font-weight: 600;
     color: var(--text-dim);
     letter-spacing: 0.04em;
+    /* z-index alto para que quede siempre por encima de las demás
+       tarjetas/botones, y no algún elemento tape la insignia. */
+    z-index: 50;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.35);
   }
   .hero-brand span {
     color: var(--accent);
@@ -160,6 +180,63 @@
     color: #c4b5fd;
     font-weight: 600;
     box-shadow: 0 0 12px rgba(124,92,252,0.2);
+  }
+
+  /* ── BOTÓN "SELECCIONAR TODOS" ──
+     Reutiliza la apariencia de .group-btn pero con borde punteado
+     para que se distinga visualmente de los botones de grupo normales. */
+  .group-btn.select-all {
+    border-style: dashed;
+    color: var(--accent);
+  }
+  .group-btn.select-all:hover {
+    border-color: var(--accent);
+    color: var(--text);
+  }
+
+  /* ── INTERRUPTOR DE BUCLE ──
+     Fila con el mismo estilo que .pause-row, contiene el checkbox
+     que activa/desactiva la repetición automática de la lista. */
+  .loop-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-sub);
+  }
+  /* Ocultamos el checkbox nativo del navegador... */
+  .loop-row input[type=checkbox] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 30px;
+    height: 17px;
+    border-radius: 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    position: relative;
+    cursor: pointer;
+    outline: none;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  /* ...y dibujamos nuestro propio "círculo" deslizante con ::before */
+  .loop-row input[type=checkbox]::before {
+    content: '';
+    position: absolute;
+    top: 1px; left: 1px;
+    width: 13px; height: 13px;
+    border-radius: 50%;
+    background: var(--text-sub);
+    transition: transform 0.2s ease, background 0.2s ease;
+  }
+  /* Cuando el checkbox está marcado (loop activado): fondo morado y
+     el círculo se desliza hacia la derecha */
+  .loop-row input[type=checkbox]:checked {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-color: transparent;
+  }
+  .loop-row input[type=checkbox]:checked::before {
+    transform: translateX(13px);
+    background: #fff;
   }
 
   /* ── CONTROLS ── */
@@ -303,6 +380,51 @@
     background: var(--border);
   }
   .group-title:first-child { margin-top: 0; }
+  /* El grupo entero fue excluido del bucle con su botón 🔇: además
+     de atenuar cada tarjeta, atenuamos también el título. */
+  .group-title.excluded {
+    opacity: 0.45;
+  }
+
+  /* ── BOTÓN INCLUIR/EXCLUIR DEL BUCLE (grupo y verbo) ──
+     Un mismo estilo de botón circular se usa en dos lugares:
+       1) junto al título de cada grupo ("Los más importantes",
+          "Grupo 1:..."), para sacar/meter TODO ese grupo del bucle.
+       2) dentro de cada tarjeta de verbo, para sacar/meter solo ESE
+          verbo del bucle.
+     Ícono de parlante: 🔊 = incluido (suena normalmente cuando el
+     bucle "Comenzar" pasa por acá), 🔇 = excluido (el bucle lo salta
+     por completo, aunque sigue viéndose en pantalla, solo que
+     atenuado, para poder volver a incluirlo con otro click). */
+  .loop-toggle-btn {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-sub);
+    font-size: 11px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    padding: 0;
+  }
+  .loop-toggle-btn:hover {
+    border-color: rgba(124,92,252,0.5);
+    color: var(--text);
+    background: var(--surface);
+  }
+  /* Estado "excluido": borde y fondo rojizos, para que se distinga
+     rápido de un vistazo qué va a sonar y qué no. */
+  .loop-toggle-btn.excluded {
+    background: rgba(252,92,92,0.12);
+    border-color: rgba(252,92,92,0.35);
+    color: #fc8c8c;
+  }
 
   /* ── VERB CARDS ── */
   .verb-card {
@@ -321,6 +443,29 @@
   .verb-card.done {
     opacity: var(--done-opacity);
   }
+  /* El verbo está marcado como "fuera del bucle": lo atenuamos
+     bastante para que se note de un vistazo que no va a sonar. */
+  .verb-card.excluded {
+    opacity: 0.35;
+  }
+  /* Caso especial: el grupo entero está apagado, pero este verbo
+     puntual fue reactivado a mano. Le damos un borde y fondo propios
+     (en vez de la atenuación de .excluded) para que se note como
+     una "excepción" dentro de un grupo silenciado. */
+  .verb-card.reactivated {
+    border-color: var(--active-border);
+    background: rgba(124,92,252,0.06);
+  }
+
+  /* Fila que contiene el nombre en español + el botón de
+     incluir/excluir del bucle, uno al lado del otro. */
+  .verb-es-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
 
   .verb-es {
     font-size: 10.5px;
@@ -328,12 +473,29 @@
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--text-dim);
-    margin-bottom: 8px;
   }
 
   .verb-row {
     display: flex;
     gap: 7px;
+  }
+
+  /* ── NOTA INFORMATIVA DEL VERBO ──
+     Texto opcional (solo aparece si el verbo trae la propiedad
+     "note" en ALL_GROUPS) con una aclaración para el usuario, por
+     ejemplo cuándo usar "was" y cuándo "were". Es puramente visual:
+     la síntesis de voz (función speak/toSpeechText) NUNCA la lee en
+     voz alta, porque solo toma los textos de v.base/v.past/v.part,
+     no v.note. */
+  .verb-note {
+    margin-top: 8px;
+    padding: 7px 10px;
+    background: rgba(124,92,252,0.08);
+    border: 1px solid rgba(124,92,252,0.2);
+    border-radius: var(--radius-sm);
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--text-sub);
   }
 
   .verb-col {
@@ -419,6 +581,12 @@
 <div class="container">
 
   <div class="section-label">Grupos</div>
+  <!--
+    Contenedor de los botones de grupo (g1, g2, g3...).
+    El botón "Todos" se agrega aparte, con JS, dentro de renderGroups(),
+    para que siempre quede primero en la lista sin importar cuántos
+    grupos existan en ALL_GROUPS.
+  -->
   <div class="group-selector" id="groupSelector"></div>
 
   <div class="controls-wrap">
@@ -440,6 +608,22 @@
         oninput="document.getElementById('pauseVal').textContent=this.value+'s'">
       <span class="pause-val" id="pauseVal">2s</span>
     </div>
+
+    <!--
+      Interruptor de "Bucle": si está marcado, cuando el botón
+      "Comenzar" termina de reproducir todos los grupos seleccionados
+      arriba (menos los que hayan sido excluidos con el botón 🔇 junto
+      a cada título de grupo, o verbos excluidos individualmente),
+      vuelve a empezar desde el primero automáticamente, una y otra
+      vez, hasta que el usuario presione "Detener" o desmarque este
+      interruptor.
+      Solo vive mientras la pestaña está abierta (es una variable de
+      JavaScript en memoria, no se guarda al cerrar el navegador).
+    -->
+    <div class="loop-row">
+      <input type="checkbox" id="loopToggle" onchange="loopEnabled = this.checked">
+      🔁 Bucle
+    </div>
   </div>
 
   <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
@@ -449,16 +633,32 @@
 </div>
 
 <script>
+// ─────────────────────────────────────────────────────────────
+// DATOS: lista de todos los grupos de verbos irregulares.
+// Cada grupo tiene:
+//   id    → identificador único usado internamente (ej: "g1", "top")
+//   label → texto que se muestra en el botón del grupo
+//   verbs → array de verbos, cada uno con:
+//       es    → verbo en español (para mostrar)
+//       base  → forma base en inglés         (ej: "Go")
+//       baseP → pronunciación aproximada      (ej: "gou")
+//       past  → pasado simple en inglés       (ej: "Went")
+//       pastP → pronunciación del pasado
+//       part  → participio en inglés          (ej: "Gone")
+//       partP → pronunciación del participio
+// ─────────────────────────────────────────────────────────────
 const ALL_GROUPS = [
   {
     id:"top", label:"Los más importantes",
     verbs:[
-      { es:"Ser / Estar",    base:"Be",     baseP:"bii",     past:"Was / Were", pastP:"uos / uer", part:"Been",       partP:"bin"      },
+      { es:"Ser / Estar",    base:"Be",     baseP:"bii",     past:"Was / Were", pastP:"uos / uer", part:"Been",       partP:"bin",
+        note:"💡 &quot;Was&quot; se usa con I / he / she / it. &quot;Were&quot; se usa con you / we / they." },
       { es:"Tener",          base:"Have",   baseP:"jav",     past:"Had",        pastP:"jad",       part:"Had",        partP:"jad"      },
       { es:"Hacer",          base:"Do",     baseP:"du",      past:"Did",        pastP:"did",       part:"Done",       partP:"don"      },
       { es:"Ir",             base:"Go",     baseP:"gou",     past:"Went",       pastP:"uent",      part:"Gone",       partP:"gon"      },
       { es:"Venir",          base:"Come",   baseP:"cam",     past:"Came",       pastP:"keim",      part:"Come",       partP:"cam"      },
-      { es:"Obtener",        base:"Get",    baseP:"get",     past:"Got",        pastP:"got",       part:"Got/Gotten", partP:"got/gaten"},
+      { es:"Obtener",        base:"Get",    baseP:"get",     past:"Got",        pastP:"got",       part:"Got/Gotten", partP:"got/gaten",
+        note:"💡 &quot;Got&quot; se usa en inglés británico. &quot;Gotten&quot; se usa en inglés americano (las dos formas son correctas)." },
       { es:"Hacer/Fabricar", base:"Make",   baseP:"meik",    past:"Made",       pastP:"meid",      part:"Made",       partP:"meid"     },
       { es:"Tomar",          base:"Take",   baseP:"teik",    past:"Took",       pastP:"tuk",       part:"Taken",      partP:"teiken"   },
       { es:"Ver",            base:"See",    baseP:"sii",     past:"Saw",        pastP:"so",        part:"Seen",       partP:"siin"     },
@@ -556,61 +756,326 @@ const ALL_GROUPS = [
   },
 ];
 
+// ─────────────────────────────────────────────────────────────
+// ESTADO GLOBAL (variables "de sesión")
+// Estas variables viven en la memoria del navegador mientras la
+// pestaña está abierta. Si recargas la página, todas vuelven a su
+// valor inicial (por eso decimos que el bucle es "por sesión").
+// ─────────────────────────────────────────────────────────────
+
+// Set con los id de los grupos actualmente seleccionados/activos.
+// Usamos un Set (y no un array) porque nos interesa solo si un id
+// "está" o "no está", y Set evita duplicados automáticamente.
 let activeGroups = new Set(["top"]);
+
+// true mientras la locución (el "play") está en curso.
 let playing = false;
+
+// Cuando el usuario presiona "Detener", esta bandera se pone en true
+// y el bucle for de startPlaying() la revisa en cada vuelta para
+// cortar la reproducción apenas sea posible.
 let stopFlag = false;
 
+// Controla si, al terminar de reproducir todos los verbos activos,
+// la app debe volver a empezar automáticamente desde el primero.
+// Se actualiza desde el checkbox #loopToggle (ver atributo onchange
+// en el HTML) y se lee dentro de startPlaying().
+let loopEnabled = false;
+
+// Identifica QUÉ se está reproduciendo ahora mismo. La usa playScope
+// para saber si un click nuevo debe reemplazar la reproducción en
+// curso, o si el usuario tocó el mismo control que ya está sonando
+// (en cuyo caso lo interpretamos como "apagar"). Como los botones de
+// grupo y de verbo ya no reproducen audio por su cuenta (ahora son
+// interruptores de incluir/excluir del bucle), el único valor que
+// toma aparte de null es "all" (la reproducción del botón "Comenzar").
+let activePlayId = null;
+
+// Set con los verbos que el usuario apagó A MANO mientras su grupo
+// estaba PRENDIDO. Cada verbo se guarda como el texto "gid:vi" (ej:
+// "g1:2"), combinando el id de su grupo y su posición dentro de ese
+// grupo, para que sea un identificador único.
+// Ojo: este Set solo se consulta cuando el grupo está prendido (ver
+// isVerbIncluded más abajo). Si el grupo está apagado, este Set se
+// ignora y se usa verbIncludedOverrides en su lugar.
+let excludedVerbs = new Set();
+
+// Set con los verbos que el usuario prendió A MANO mientras su grupo
+// estaba APAGADO. Es el Set "espejo" de excludedVerbs: sirve para el
+// caso pedido -"si apago un grupo entero, quiero poder reactivar
+// solo algunos verbos sueltos de ese grupo"-, sin tener que prender
+// el grupo completo de nuevo.
+let verbIncludedOverrides = new Set();
+
+// Set con los id de GRUPOS COMPLETOS que el usuario marcó como
+// "fuera del bucle" con el botón 🔊/🔇 que está junto al título del
+// grupo (ej: junto a "Los más importantes" o "Grupo 1: -ought/-aught").
+// A diferencia del filtro de arriba (activeGroups, que directamente
+// oculta el grupo de la pantalla), un grupo en excludedGroups sigue
+// viéndose en la lista —atenuado—, solo que el bucle lo salta (salvo
+// los verbos puntuales reactivados a mano, ver verbIncludedOverrides).
+let excludedGroups = new Set();
+
+// Arma la "clave" única de un verbo a partir de su grupo y posición,
+// para usarla como entrada de los Sets excludedVerbs / verbIncludedOverrides.
+function verbKey(gid, vi) { return gid + ":" + vi; }
+
+// true si el grupo COMPLETO está marcado como excluido del bucle.
+function isGroupExcluded(gid) { return excludedGroups.has(gid); }
+
+// Decide si ESTE verbo puntual efectivamente suena en el bucle, en
+// dos pasos:
+//   1. Si su grupo está APAGADO, el verbo NO suena por defecto...
+//      salvo que el usuario lo haya reactivado a mano (esté en
+//      verbIncludedOverrides). Así se resuelve el pedido de poder
+//      "activar individualmente una sección" de un grupo apagado.
+//   2. Si su grupo está PRENDIDO, el verbo SÍ suena por defecto...
+//      salvo que el usuario lo haya apagado a mano (esté en
+//      excludedVerbs), como ya funcionaba antes.
+function isVerbIncluded(gid, vi) {
+  const key = verbKey(gid, vi);
+  if (isGroupExcluded(gid)) {
+    return verbIncludedOverrides.has(key);
+  }
+  return !excludedVerbs.has(key);
+}
+
+// Prende/apaga UN SOLO verbo cuando el usuario hace click en su
+// botón 🔊/🔇. El Set que se usa depende de si su grupo está
+// prendido o apagado en este momento (ver isVerbIncluded arriba):
+//   - Grupo prendido → alternamos su presencia en excludedVerbs
+//     (el comportamiento de "silenciar solo este verbo").
+//   - Grupo apagado  → alternamos su presencia en verbIncludedOverrides
+//     (el comportamiento nuevo de "reactivar solo este verbo").
+function toggleVerbExclusion(gid, vi) {
+  const key = verbKey(gid, vi);
+  if (isGroupExcluded(gid)) {
+    if (verbIncludedOverrides.has(key)) verbIncludedOverrides.delete(key);
+    else verbIncludedOverrides.add(key);
+  } else {
+    if (excludedVerbs.has(key)) excludedVerbs.delete(key);
+    else excludedVerbs.add(key);
+  }
+  // Volvemos a dibujar la lista para reflejar el nuevo estado visual
+  // (tarjeta atenuada/resaltada + ícono del botón cambiado).
+  renderVerbList();
+}
+
+// Prende/apaga la exclusión de un GRUPO ENTERO cuando el usuario hace
+// click en el botón 🔊/🔇 que está junto al título del grupo.
+// Nota importante: esto NO borra excludedVerbs ni verbIncludedOverrides.
+// Así, si vuelves a prender el grupo más tarde, los verbos que habías
+// silenciado a mano siguen silenciados, y si lo vuelves a apagar, los
+// que habías reactivado a mano siguen reactivados: la app "recuerda"
+// tus ajustes puntuales de cada verbo aunque cambies el grupo entero
+// de encendido a apagado varias veces.
+function toggleGroupExclusion(gid) {
+  if(excludedGroups.has(gid)) excludedGroups.delete(gid);
+  else excludedGroups.add(gid);
+  renderVerbList();
+}
+
+// Devuelve un array plano con todos los verbos de los grupos
+// actualmente activos (seleccionados en el filtro de arriba) que
+// efectivamente deben sonar, y le agrega a cada verbo su grupo (gid)
+// y su posición dentro del grupo (vi), para poder ubicarlo después.
+// Este es el array que efectivamente escucha el botón "Comenzar"
+// (con o sin el interruptor de bucle general activado).
 function getSelectedVerbs() {
   let result = [];
-  ALL_GROUPS.forEach(g => { if(activeGroups.has(g.id)) result = result.concat(g.verbs.map((v,i) => ({...v, gid:g.id, vi:i}))); });
+  ALL_GROUPS.forEach(g => {
+    // Si el grupo no está activo en el filtro de arriba, ni entra al
+    // cálculo (esto es independiente de si está prendido/apagado
+    // para el bucle: primero tiene que estar seleccionado arriba).
+    if(activeGroups.has(g.id)) {
+      result = result.concat(
+        g.verbs
+          .map((v,i) => ({...v, gid:g.id, vi:i}))
+          // isVerbIncluded ya combina el estado del grupo (prendido/
+          // apagado) con el override individual de este verbo puntual.
+          .filter(v => isVerbIncluded(v.gid, v.vi))
+      );
+    }
+  });
   return result;
 }
 
+
+// Dibuja los botones de la barra de grupos (g1, g2, g3...) más el
+// botón especial "Todos" que selecciona/deselecciona todos a la vez.
 function renderGroups() {
   const sel = document.getElementById("groupSelector");
+  // Limpiamos el contenedor antes de volver a dibujar, para no
+  // duplicar botones si esta función se llama más de una vez.
   sel.innerHTML = "";
+
+  // ── Botón "Seleccionar todos" ──
+  // Se agrega primero, antes de recorrer ALL_GROUPS, para que
+  // siempre aparezca al inicio de la fila de botones.
+  const allBtn = document.createElement("button");
+  allBtn.className = "group-btn select-all";
+  // El texto del botón cambia según si ya están todos seleccionados:
+  // si ya están todos, ofrecemos "Ninguno" para poder deseleccionar.
+  const todosActivos = activeGroups.size === ALL_GROUPS.length;
+  allBtn.textContent = todosActivos ? "✕ Ninguno" : "✓ Todos";
+  allBtn.onclick = toggleAllGroups;
+  sel.appendChild(allBtn);
+
+  // ── Un botón por cada grupo definido en ALL_GROUPS ──
   ALL_GROUPS.forEach(g => {
     const b = document.createElement("button");
+    // Si el grupo está activo, le sumamos la clase "active" para que
+    // el CSS lo pinte con el estilo resaltado (ver .group-btn.active).
     b.className = "group-btn" + (activeGroups.has(g.id) ? " active" : "");
     b.textContent = g.label;
+    // Al hacer click, delega el trabajo a toggleGroup, pasándole el
+    // id del grupo y una referencia al propio botón (para no tener
+    // que volver a buscarlo en el DOM).
     b.onclick = () => toggleGroup(g.id, b);
     sel.appendChild(b);
   });
 }
 
+// Activa o desactiva un único grupo cuando el usuario hace click en
+// su botón individual.
 function toggleGroup(id, btn) {
   if(activeGroups.has(id)) {
-    if(activeGroups.size > 1) { activeGroups.delete(id); btn.classList.remove("active"); }
-  } else { activeGroups.add(id); btn.classList.add("active"); }
+    // Evitamos quedarnos sin ningún grupo activo: si este es el
+    // último que queda, no dejamos que se desactive.
+    if(activeGroups.size > 1) {
+      activeGroups.delete(id);
+      btn.classList.remove("active");
+    }
+  } else {
+    activeGroups.add(id);
+    btn.classList.add("active");
+  }
+  // Como cambió qué grupos están activos, volvemos a pintar el
+  // botón "Todos"/"Ninguno" (puede que ahora corresponda cambiar
+  // su texto) y la lista de verbos visible debajo.
+  renderGroups();
   renderVerbList();
 }
 
+// Selecciona todos los grupos de una sola vez, o si ya estaban
+// todos seleccionados, los deja todos vacíos menos uno (para
+// respetar la misma regla de "siempre debe quedar al menos un
+// grupo activo" que usa toggleGroup).
+function toggleAllGroups() {
+  const todosActivos = activeGroups.size === ALL_GROUPS.length;
+  if(todosActivos) {
+    // Ya estaban todos: dejamos solo el primer grupo activo.
+    activeGroups = new Set([ALL_GROUPS[0].id]);
+  } else {
+    // Creamos un Set nuevo con el id de absolutamente todos los
+    // grupos, usando map() para transformar cada grupo en su id.
+    activeGroups = new Set(ALL_GROUPS.map(g => g.id));
+  }
+  // Volvemos a dibujar los botones (para reflejar el nuevo estado)
+  // y la lista de verbos correspondiente.
+  renderGroups();
+  renderVerbList();
+}
+
+// Traduce la posición "local" de un verbo (su grupo + su índice
+// dentro de ese grupo) a una posición "global" dentro de la lista
+// combinada de getSelectedVerbs(). Esto es necesario porque los
+// verbos se reproducen en un solo array continuo, pero se muestran
+// agrupados visualmente por grupo.
 function getGlobalIndex(gid, vi) {
-  let idx = 0;
+  let idx = 0; // acumulador: cuántos verbos "activos" ya contamos
   for(const g of ALL_GROUPS) {
+    // Si el grupo no está activo, no cuenta para el índice global.
     if(!activeGroups.has(g.id)) continue;
+    // Si llegamos al grupo buscado, el índice global es lo que ya
+    // acumulamos más la posición local (vi) dentro de este grupo.
     if(g.id === gid) return idx + vi;
     idx += g.verbs.length;
   }
-  return -1;
+  return -1; // el grupo no está activo (no debería pasar en uso normal)
 }
 
+// Dibuja toda la lista de tarjetas de verbos en pantalla, agrupadas
+// por título de grupo. Se llama cada vez que cambia la selección de
+// grupos, y también durante la reproducción para resaltar la
+// tarjeta y columna (base/pasado/participio) que se está leyendo.
+//   activeIdx: índice global del verbo que se está reproduciendo ahora
+//   activeCol: columna que se está leyendo (0=base, 1=pasado, 2=participio)
 function renderVerbList(activeIdx=-1, activeCol=-1) {
   const list = document.getElementById("verbList");
+  // Limpiamos todo el HTML anterior antes de redibujar desde cero.
   list.innerHTML = "";
   ALL_GROUPS.forEach(g => {
+    // Si el grupo no está activo, ni siquiera dibujamos su título.
     if(!activeGroups.has(g.id)) return;
+
+    // ── Título del grupo + su botón de incluir/excluir del bucle ──
+    // ¿Este grupo entero está marcado como excluido del bucle?
+    const groupExcluded = isGroupExcluded(g.id);
     const title = document.createElement("div");
-    title.className = "group-title";
-    title.textContent = g.label;
+    // Si el grupo está excluido, atenuamos también su título para
+    // que se note de un vistazo que ninguno de sus verbos va a sonar.
+    title.className = "group-title" + (groupExcluded ? " excluded" : "");
+    // El texto va en un <span> propio (y no directo en el div) para
+    // que el botón pueda ser un elemento hermano dentro del mismo
+    // flex container (title ya es display:flex, ver CSS).
+    const titleText = document.createElement("span");
+    titleText.textContent = g.label;
+    title.appendChild(titleText);
+
+    const groupToggleBtn = document.createElement("button");
+    groupToggleBtn.type = "button";
+    groupToggleBtn.className = "loop-toggle-btn" + (groupExcluded ? " excluded" : "");
+    groupToggleBtn.title = groupExcluded
+      ? "Grupo excluido del bucle — click para incluirlo de nuevo"
+      : "Grupo incluido en el bucle — click para excluirlo";
+    groupToggleBtn.textContent = groupExcluded ? "🔇" : "🔊";
+    // stopPropagation no es estrictamente necesario aquí (el título
+    // no tiene otro onclick), pero lo dejamos por prolijidad/costumbre.
+    groupToggleBtn.onclick = (e) => { e.stopPropagation(); toggleGroupExclusion(g.id); };
+    title.appendChild(groupToggleBtn);
     list.appendChild(title);
+
     g.verbs.forEach((v, i) => {
       const gIdx = getGlobalIndex(g.id, i);
+      // ¿Este verbo puntual efectivamente suena en el bucle? Ya tiene
+      // en cuenta el estado del grupo (prendido/apagado) MÁS el
+      // override individual de este verbo (ver isVerbIncluded).
+      const included = isVerbIncluded(g.id, i);
+      // Caso especial a resaltar: el grupo está apagado, PERO este
+      // verbo puntual fue reactivado a mano (es la "excepción" dentro
+      // de un grupo silenciado). Le damos un estilo propio para que
+      // se note de un vistazo, distinto del "incluido normal".
+      const reactivated = groupExcluded && included;
       const card = document.createElement("div");
-      card.className = "verb-card" + (gIdx===activeIdx ? " active" : (activeIdx>=0 && gIdx<activeIdx ? " done" : ""));
+      card.className = "verb-card"
+        + (included ? "" : " excluded")
+        + (reactivated ? " reactivated" : "")
+        + (gIdx===activeIdx ? " active" : (activeIdx>=0 && gIdx<activeIdx ? " done" : ""));
       card.id = "vcard-" + gIdx;
+      // El tooltip cambia según el grupo esté prendido o apagado, para
+      // que quede claro qué va a pasar al hacer click en cada caso:
+      //   grupo prendido + verbo sonando  → click lo silencia
+      //   grupo prendido + verbo callado  → click lo vuelve a incluir
+      //   grupo apagado  + verbo callado  → click lo reactiva solo a él
+      //   grupo apagado  + verbo sonando  → click cancela esa reactivación
+      let verbTooltip;
+      if (groupExcluded) {
+        verbTooltip = included
+          ? "Reactivado a mano aunque su grupo esté apagado — click para volver a silenciarlo"
+          : "Este grupo está apagado — click para reactivar SOLO este verbo";
+      } else {
+        verbTooltip = included
+          ? "Incluido en el bucle — click para excluirlo"
+          : "Excluido del bucle — click para incluirlo de nuevo";
+      }
       card.innerHTML = `
-        <div class="verb-es">${v.es}</div>
+        <div class="verb-es-row">
+          <div class="verb-es">${v.es}</div>
+          <button type="button" class="loop-toggle-btn${included ? '' : ' excluded'}"
+            title="${verbTooltip}"
+            onclick="event.stopPropagation(); toggleVerbExclusion('${g.id}', ${i})">${included ? '🔊' : '🔇'}</button>
+        </div>
         <div class="verb-row">
           <div class="verb-col${gIdx===activeIdx && activeCol===0?' speaking':''}" id="vcol-${gIdx}-0">
             <span class="speaking-icon">
@@ -645,79 +1110,346 @@ function renderVerbList(activeIdx=-1, activeCol=-1) {
             <div class="col-word">${v.part}</div>
             <div class="col-pron">${v.partP}</div>
           </div>
-        </div>`;
+        </div>
+        ${v.note ? `<div class="verb-note">${v.note}</div>` : ''}`;
       list.appendChild(card);
     });
   });
 }
 
+// Convierte texto a voz usando la API nativa del navegador
+// (SpeechSynthesis) y devuelve una Promise que se resuelve cuando
+// termina de hablar. Esto nos permite usar "await speak(...)" dentro
+// de startPlaying() y así esperar a que termine cada palabra antes
+// de pasar a la siguiente.
 function speak(text, rate=0.85) {
   return new Promise(res => {
+    // Si el navegador no soporta síntesis de voz, resolvemos de
+    // inmediato para no trabar el resto del programa.
     if (!window.speechSynthesis) { res(); return; }
+    // Cancelamos cualquier locución pendiente antes de empezar una
+    // nueva (evita que se superpongan dos voces hablando a la vez).
     window.speechSynthesis.cancel();
     const utt = new SpeechSynthesisUtterance(text);
-    utt.lang = "en-US";
-    utt.rate = rate;
-    utt.onend = res;
-    utt.onerror = res;
+    utt.lang = "en-US";   // acento/idioma en el que se pronuncia
+    utt.rate = rate;      // velocidad del habla (1 = normal)
+    utt.onend = res;      // al terminar de hablar, resolvemos la Promise
+    utt.onerror = res;    // si hay un error, igual resolvemos (no trabar la app)
     window.speechSynthesis.speak(utt);
   });
 }
 
+// Pequeña ayuda para "pausar" código async: devuelve una Promise que
+// se resuelve sola después de "ms" milisegundos, usando setTimeout.
 function wait(ms) { return new Promise(r => setTimeout(r, ms)); }
 
-async function startPlaying() {
-  if(playing) return;
-  playing = true; stopFlag = false;
-  document.getElementById("btnPlay").style.display = "none";
-  document.getElementById("btnStop").style.display = "";
-  const verbs = getSelectedVerbs();
+// ─────────────────────────────────────────────────────────────
+// WAKE LOCK (mantener la pantalla encendida mientras se reproduce)
+//
+// Qué problema resuelve: si el celular apaga la pantalla solo por
+// inactividad (nadie toca la pantalla mientras escucha), muchos
+// navegadores móviles pausan el JavaScript de la pestaña -y con
+// él, la síntesis de voz- para ahorrar batería. La "Wake Lock API"
+// le pide al sistema operativo "no apagues la pantalla todavía",
+// evitando ese corte.
+//
+// Qué NO resuelve: si el usuario bloquea el teléfono a mano, cambia
+// de app, o el navegador decide igual pausar la pestaña en segundo
+// plano, el audio puede cortarse de todas formas. Eso ya depende del
+// sistema operativo/navegador y no hay forma de garantizarlo desde
+// el código de la página. Además, esta API solo funciona en un
+// "contexto seguro" (la página servida por https://, no un archivo
+// local abierto con file://) y no todos los navegadores la soportan
+// todavía (por eso todo el código va envuelto en try/catch: si no
+// existe o falla, la app sigue funcionando igual, solo que sin este
+// beneficio extra).
+// ─────────────────────────────────────────────────────────────
+
+// Guarda la referencia (el "sentinel") al bloqueo de pantalla activo.
+// Mientras no sea null, significa que la pantalla está "reservada"
+// para no apagarse sola.
+let wakeLockSentinel = null;
+
+// Pide al navegador que no apague la pantalla. Se llama apenas
+// arranca una reproducción (ver playScope). Es async porque
+// navigator.wakeLock.request() devuelve una Promise.
+async function requestWakeLock() {
+  // Si el navegador no soporta esta API, no hacemos nada (la app
+  // sigue funcionando normalmente, solo sin este resguardo extra).
+  if (!("wakeLock" in navigator)) return;
+  try {
+    // "screen" es el único tipo de wake lock que existe hoy: se
+    // refiere puntualmente a "no apagar la pantalla".
+    wakeLockSentinel = await navigator.wakeLock.request("screen");
+    // El sistema operativo puede soltar el bloqueo por su cuenta en
+    // cualquier momento (por ejemplo, si la pestaña deja de estar
+    // visible). Escuchamos ese evento solo para dejar nuestra
+    // variable prolija (poniéndola en null); no hace falta volver a
+    // pedirlo aquí mismo porque ya cubrimos ese caso con el listener
+    // de "visibilitychange" más abajo.
+    wakeLockSentinel.addEventListener("release", () => {
+      wakeLockSentinel = null;
+    });
+  } catch (err) {
+    // Puede fallar por falta de permisos, por no estar en https, etc.
+    // Lo dejamos pasar en silencio: es una mejora "best effort", no
+    // algo de lo que dependa el resto de la app para funcionar.
+    wakeLockSentinel = null;
+  }
+}
+
+// Libera el bloqueo de pantalla cuando la reproducción termina o se
+// detiene, para no dejar la pantalla encendida "a la fuerza" el
+// resto del tiempo sin necesidad (eso gastaría batería de más).
+async function releaseWakeLock() {
+  if (wakeLockSentinel) {
+    try { await wakeLockSentinel.release(); } catch (err) { /* ignorar */ }
+    wakeLockSentinel = null;
+  }
+}
+
+// Si el usuario cambia de pestaña/app y vuelve (la pestaña pasa de
+// oculta a visible de nuevo) MIENTRAS seguimos reproduciendo, el
+// sistema operativo ya habrá soltado el wake lock por su cuenta al
+// ocultarse. Este listener lo vuelve a pedir automáticamente en ese
+// caso, para no depender de que el usuario haga nada manualmente.
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && playing) {
+    requestWakeLock();
+  }
+});
+
+// Algunos verbos tienen DOS formas posibles en un mismo campo, escritas
+// con una barra "/" para mostrarlas juntas en pantalla, por ejemplo:
+//   "Was / Were"   (to be, pasado)
+//   "Got/Gotten"   (get, participio, sin espacios)
+// El motor de voz del navegador no hace ninguna pausa al toparse con
+// "/": simplemente la ignora, entonces "Was / Were" termina sonando
+// pegado, como una sola palabra ("waswere").
+// Esta función arma el texto que efectivamente se manda a hablar,
+// reemplazando la barra (con o sin espacios alrededor) por una coma:
+// una coma sí le indica al motor de voz que haga una pausa breve,
+// separando claramente ambas formas ("Was, Were").
+// Importante: esto SOLO cambia lo que se escucha; en pantalla la
+// tarjeta sigue mostrando el texto original con la barra "/".
+function toSpeechText(formText) {
+  return formText.replace(/\s*\/\s*/g, ", ") + ".";
+}
+
+
+// Recorre UNA vez la lista de verbos actualmente seleccionados,
+// leyendo en voz alta base → pasado → participio de cada uno, con
+// una pausa configurable entre cada forma.
+// Es una función "async" porque usa await para esperar tanto a que
+// termine de hablar (speak) como a que pase el tiempo de pausa (wait).
+// Devuelve true si llegó al final sin ser interrumpida, o false si
+// el usuario presionó "Detener" (stopFlag) en el medio.
+// Recorre UNA vez una lista de verbos dada, leyendo en voz alta
+// base → pasado → participio de cada uno, con una pausa configurable
+// entre cada forma. Ya NO decide sola qué verbos reproducir: recibe
+// la lista lista para usar como parámetro, así podemos reutilizarla
+// tanto para "todos los grupos seleccionados" como para "un solo
+// grupo" o "un solo verbo".
+// Es una función "async" porque usa await para esperar tanto a que
+// termine de hablar (speak) como a que pase el tiempo de pausa (wait).
+// Devuelve true si llegó al final sin ser interrumpida, o false si
+// el usuario presionó "Detener" (stopFlag) en el medio.
+async function playOnceThroughList(verbsList) {
+  // El slider de pausa está en segundos; lo pasamos a milisegundos
+  // porque setTimeout (usado dentro de wait) trabaja en milisegundos.
   const pauseMs = parseFloat(document.getElementById("pauseSlider").value) * 1000;
   const statusEl = document.getElementById("status");
   statusEl.className = "status active";
 
-  for(let i = 0; i < verbs.length; i++) {
+  // Recorremos cada verbo de la lista, uno por uno, en orden.
+  for(let i = 0; i < verbsList.length; i++) {
+    // Revisamos stopFlag ANTES de procesar cada verbo: si el usuario
+    // ya pidió detener, cortamos el for inmediatamente con "break".
     if(stopFlag) break;
-    const v = verbs[i];
+    const v = verbsList[i];
+    // Traducimos la posición dentro del array plano "verbsList" a la
+    // posición "global" que usa renderVerbList para resaltar la
+    // tarjeta correcta en pantalla.
     const gIdx = getGlobalIndex(v.gid, v.vi);
-    statusEl.textContent = `▶ Verbo ${i+1} de ${verbs.length}: ${v.base}`;
-    document.getElementById("progressFill").style.width = Math.round((i/verbs.length)*100)+"%";
+    statusEl.textContent = `▶ Verbo ${i+1} de ${verbsList.length}: ${v.base}`;
+    // Actualizamos la barra de progreso según cuántos verbos ya pasamos.
+    document.getElementById("progressFill").style.width = Math.round((i/verbsList.length)*100)+"%";
+    // Resaltamos la tarjeta del verbo actual (sin marcar aún ninguna
+    // columna como "hablando": por eso el segundo argumento es -1).
     renderVerbList(gIdx, -1);
     const card = document.getElementById("vcard-"+gIdx);
+    // Si la tarjeta existe en el DOM, hacemos scroll suave para que
+    // quede centrada y visible en pantalla. (Si gIdx es -1 porque el
+    // grupo dejó de estar activo a mitad de la reproducción, "card"
+    // será null y simplemente no hacemos scroll: no rompe nada.)
     if(card) card.scrollIntoView({behavior:"smooth", block:"center"});
-    const cols = [{text:v.base+".", col:0}, {text:v.past+".", col:1}, {text:v.part+".", col:2}];
+
+    // Las 3 formas del verbo que vamos a pronunciar en orden, cada
+    // una asociada al número de columna que debe iluminarse (0, 1, 2).
+    // Usamos toSpeechText() en vez de simplemente "+ '.'" para que las
+    // formas dobles (ej: "Was / Were") se lean con una pausa clara.
+    const cols = [
+      {text:toSpeechText(v.base), col:0},
+      {text:toSpeechText(v.past), col:1},
+      {text:toSpeechText(v.part), col:2}
+    ];
     for(const c of cols) {
       if(stopFlag) break;
+      // Marcamos esta columna específica como "speaking" (le da el
+      // resaltado visual definido en .verb-col.speaking del CSS).
       renderVerbList(gIdx, c.col);
+      // Esperamos a que termine de pronunciar la palabra actual
+      // antes de seguir con la siguiente línea de código.
       await speak(c.text);
       if(stopFlag) break;
+      // Pausa entre formas, para dar tiempo a repetir en voz alta.
       await wait(pauseMs);
     }
   }
 
-  if(!stopFlag) {
-    statusEl.textContent = "✓ ¡Completado!";
-    statusEl.className = "status active";
-    document.getElementById("progressFill").style.width = "100%";
-    renderVerbList();
-  }
-  playing = false; stopFlag = false;
-  document.getElementById("btnPlay").style.display = "";
-  document.getElementById("btnStop").style.display = "none";
+  // Devolvemos si terminamos "limpio" (sin interrupción) o no.
+  return !stopFlag;
 }
 
+// Muestra/oculta los botones "Comenzar" y "Detener" según si hay
+// ALGO reproduciéndose en este momento (sin importar si es "todos",
+// un grupo o un solo verbo): un único botón "Detener" central sirve
+// para frenar cualquiera de los tres casos.
+function updatePlayButtonsUI() {
+  document.getElementById("btnPlay").style.display = playing ? "none" : "";
+  document.getElementById("btnStop").style.display = playing ? "" : "none";
+}
+
+// ─────────────────────────────────────────────────────────────
+// NÚCLEO COMPARTIDO DE REPRODUCCIÓN
+// Tanto el botón grande "Comenzar" como el mini botón de bucle de
+// cada grupo terminan llamando a esta misma función. Así evitamos
+// repetir la misma lógica dos veces y garantizamos que nunca suenen
+// dos voces a la vez.
+//
+//   getVerbsFn    → función SIN argumentos que arma y devuelve el
+//                   array de verbos a reproducir. La volvemos a
+//                   llamar en CADA vuelta del bucle (no una sola vez
+//                   al principio) para que, si el usuario excluye o
+//                   incluye un verbo mientras suena, el cambio se
+//                   note en la próxima vuelta sin tener que detener
+//                   la reproducción a mano.
+//   playId        → identificador único de "quién" pidió reproducir
+//                   (ver comentario de activePlayId más arriba)
+//   shouldContinue→ función sin argumentos que se evalúa DESPUÉS de
+//                   cada vuelta completa; si devuelve true, se repite
+// ─────────────────────────────────────────────────────────────
+async function playScope(getVerbsFn, playId, shouldContinue) {
+  // Caso 1: el usuario volvió a hacer click sobre el MISMO botón que
+  // ya está sonando -> lo interpretamos como "apagar" (toggle).
+  if (playing && activePlayId === playId) {
+    stopPlaying();
+    return;
+  }
+
+  // Caso 2: había otra cosa sonando (otro grupo o "todos") -> la
+  // detenemos primero para que nunca se mezclen dos voces al mismo
+  // tiempo.
+  if (playing) {
+    stopFlag = true;
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    // Pequeña espera para darle tiempo al bucle anterior de notar
+    // stopFlag y salir de su for antes de que empecemos el nuestro.
+    await wait(80);
+  }
+
+  // A partir de aquí, "playId" pasa a ser la reproducción vigente.
+  playing = true;
+  stopFlag = false;
+  activePlayId = playId;
+  updatePlayButtonsUI();
+  // Pedimos que la pantalla no se apague sola mientras suena el
+  // audio. No usamos "await" aquí a propósito: no necesitamos
+  // esperar a que se resuelva para seguir reproduciendo, así el
+  // primer verbo empieza a sonar sin demora.
+  requestWakeLock();
+  // Volvemos a dibujar la lista para que el mini botón correspondiente
+  // se pinte inmediatamente con la clase "playing" (icono resaltado).
+  renderVerbList();
+
+  // "completoSinInterrupcion" indica si la última vuelta terminó
+  // completa (true) o fue cortada con "Detener" (false).
+  let completoSinInterrupcion = true;
+
+  // do...while asegura que la lista se reproduzca AL MENOS una vez,
+  // y luego repite mientras: (a) terminó limpio, (b) nadie más tomó
+  // el control de la reproducción mientras tanto, y (c) shouldContinue()
+  // siga devolviendo true (para "todos" depende del checkbox de
+  // bucle; para grupo siempre es true, o sea, bucle infinito hasta
+  // que el usuario lo detenga a mano).
+  do {
+    // Recalculamos la lista JUSTO ANTES de cada vuelta, así respeta
+    // cualquier verbo que el usuario haya excluido/incluido mientras
+    // sonaba la vuelta anterior.
+    const verbsList = getVerbsFn();
+    completoSinInterrupcion = await playOnceThroughList(verbsList);
+  } while (completoSinInterrupcion && activePlayId === playId && shouldContinue());
+
+  // Solo hacemos la limpieza final si esta reproducción SIGUE siendo
+  // la vigente. Si otro playScope la reemplazó mientras tanto, ese
+  // otro ya se encarga de dejar todo prolijo; hacerlo también aquí
+  // pisaría su estado por error.
+  if (activePlayId === playId) {
+    playing = false;
+    stopFlag = false;
+    activePlayId = null;
+    // Ya no hace falta mantener la pantalla encendida a la fuerza:
+    // liberamos el wake lock para no gastar batería de más.
+    releaseWakeLock();
+    if (completoSinInterrupcion) {
+      const statusEl = document.getElementById("status");
+      statusEl.textContent = "✓ ¡Completado!";
+      statusEl.className = "status active";
+      document.getElementById("progressFill").style.width = "100%";
+    }
+    updatePlayButtonsUI();
+    renderVerbList();
+  }
+}
+
+// Botón grande "Comenzar": reproduce todos los verbos INCLUIDOS
+// (o sea, ni el grupo ni el verbo puntual están marcados como
+// excluidos) de los grupos actualmente seleccionados en el filtro
+// de arriba. Con el interruptor "🔁 Bucle" general activado, esta
+// selección completa se repite sola hasta que se presione "Detener".
+function startPlaying() {
+  playScope(getSelectedVerbs, "all", () => loopEnabled);
+}
+
+// Se ejecuta al presionar "Detener". Corta cualquier reproducción en
+// curso gracias a que playOnceThroughList revisa stopFlag en cada
+// vuelta del for, y a que playScope revisa activePlayId antes de
+// seguir repitiendo.
 function stopPlaying() {
   stopFlag = true;
+  // window.speechSynthesis.cancel() interrumpe inmediatamente
+  // cualquier palabra que se esté pronunciando en este momento.
   if (window.speechSynthesis) window.speechSynthesis.cancel();
   playing = false;
-  document.getElementById("btnPlay").style.display = "";
-  document.getElementById("btnStop").style.display = "none";
+  activePlayId = null;
+  // Ya no necesitamos mantener la pantalla encendida a la fuerza.
+  releaseWakeLock();
+  updatePlayButtonsUI();
   const statusEl = document.getElementById("status");
   statusEl.textContent = "Detenido.";
   statusEl.className = "status";
+  // Vuelve a dibujar la lista: esto también quita la clase "playing"
+  // de cualquier mini botón que la tuviera.
   renderVerbList();
 }
 
+// ─────────────────────────────────────────────────────────────
+// ARRANQUE DE LA PÁGINA
+// Estas dos líneas se ejecutan una sola vez, apenas el navegador
+// termina de leer el <script>. Dibujan por primera vez los botones
+// de grupo y la lista de verbos (con el grupo "top" activo por
+// defecto, según el Set inicial de activeGroups).
+// ─────────────────────────────────────────────────────────────
 renderGroups();
 renderVerbList();
 </script>
