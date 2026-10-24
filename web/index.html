@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verbos Irregulares · by Chiguin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/estilos.css">
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-eyebrow">Inglés · Audio</div>
+  <h1>Verbos Irregulares</h1>
+  <p>Escucha cada forma y repite en voz alta durante la pausa</p>
+  <div class="hero-brand">by <span>Chiguin</span></div>
+</header>
+
+<main class="container">
+  <div class="section-label">Grupos</div>
+  <div class="group-selector" id="selectorGrupos"></div>
+
+  <div class="controls-wrap">
+    <button class="btn-play" id="botonComenzar" type="button">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><polygon points="3,1 13,7 3,13" fill="currentColor"/></svg>
+      Comenzar
+    </button>
+    <button class="btn-stop" id="botonDetener" type="button" hidden>
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="10" height="10" rx="2" fill="currentColor"/></svg>
+      Detener
+    </button>
+    <label class="pause-row">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+        <circle cx="6.5" cy="6.5" r="5.5" stroke="currentColor" stroke-width="1.2"/>
+        <path d="M6.5 3.5v3l2 1.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      Pausa
+      <input type="range" min="1" max="5" step="0.5" value="2" id="deslizadorPausa">
+      <span class="pause-val" id="valorPausa">2s</span>
+    </label>
+    <label class="loop-row">
+      <input type="checkbox" id="interruptorBucle">
+      🔁 Bucle
+    </label>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" id="barraProgreso" style="width:0%"></div></div>
+  <div class="status" id="estadoTexto"></div>
+  <div id="listaVerbos"></div>
+</main>
+
+<script src="js/servicios/registroErrores.js"></script>
+<script src="js/datos/verbos.js"></script>
+<script src="js/estado/seleccion.js"></script>
+<script src="js/servicios/voz.js"></script>
+<script src="js/servicios/pantallaActiva.js"></script>
+<script src="js/interfaz/vista.js"></script>
+<script src="js/reproductor.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

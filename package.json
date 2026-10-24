@@ -1,0 +1,11 @@
+{
+  "name": "verbos-irregulares",
+  "version": "1.0.0",
+  "description": "App para practicar verbos irregulares en inglés escuchándolos en voz alta. by Chiguin",
+  "private": true,
+  "license": "MIT",
+  "author": "Chiguin",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  }
+}

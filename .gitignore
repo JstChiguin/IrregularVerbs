@@ -1,0 +1,22 @@
+# Node
+node_modules/
+
+# Gradle / Android
+.gradle/
+build/
+android/local.properties
+android/.idea/
+*.iml
+captures/
+.externalNativeBuild/
+.cxx/
+
+# Firmas y secretos
+*.jks
+*.keystore
+keystore.properties
+.env
+
+# Sistema
+.DS_Store
+Thumbs.db
